@@ -1,0 +1,400 @@
+import java.sql.*;
+import java.util.Scanner;
+import java.text.SimpleDateFormat;
+
+public class OperationEditor {
+
+    static final String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/sgupta45";
+
+    public static void main(String[] args) {
+
+      //  Editing and publishing. Enter basic information on a new publication.
+      // Update information. Assign editor(s) to publication.
+      // Let each editor view the information on the publications he/she is responsible for. 
+      //Edit table of contents of a publication, by adding/deleting articles (for periodic publications) or chapters/sections (for books). 
+
+        System.out.println("Choose Operation Option:");
+        System.out.println("1) Enter Publicatiom");
+        System.out.println("2) Update Publication Information");
+        System.out.println("3) Assign editor to Publication");
+        System.out.println("4) View Publication for a specific editor.");
+        System.out.println("5) Add  Article");
+        System.out.println("6) Delete Article ");
+        System.out.println("7) Add chapter/section in a  Book");
+        System.out.println("8) Delete chapter/section in a  Book");
+        // System.out.println("5) Bill Distributor for an order and update outstanding balance");
+
+        Scanner sc = new Scanner(System.in);
+        int option = Integer.parseInt(sc.nextLine());
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+
+            Class.forName("org.mariadb.jdbc.Driver");
+
+            String user = "sgupta45";
+            String passwd = "200420103";
+
+            
+            try {
+                conn = DriverManager.getConnection(jdbcURL, user, passwd);
+                stmt = conn.createStatement();
+
+                switch(option) {
+                    case 1:
+                        insertPublication(sc, stmt);
+                        break;
+                    case 2:
+                        updatePublication(sc, stmt);
+                        break;
+                    case 3:
+                        assignEditorPublication(sc, stmt);
+                        break;
+                    case 4:
+                        viewPublication(sc, stmt);
+                        break;
+                    case 5:
+                        addArticle(sc, stmt);
+                        break;
+                    case 6:
+                        deleteArticle(sc, stmt);
+                        break;
+                    case 7:
+                        addChapter(sc, stmt);
+                        break;
+                    case 8:
+                        deleteChapter(sc, stmt);
+                        break;
+                    default:
+                        // code block
+                }
+
+            } finally {
+                close(stmt);
+                close(conn);
+            }
+        } catch(Throwable oops) {
+            oops.printStackTrace();
+        }
+    }
+
+    static void insertPublication(Scanner sc, Statement stmt) {
+       Publication p = new Publication();
+        // p_id, title, type, topic, p_date
+        System.out.print("Enter Publication Title: ");
+        p.setTitle(sc.nextLine());
+        System.out.print("Enter Publication Type: ");
+        p.setType(sc.nextLine());
+        System.out.print("Enter Publication Topic: ");
+        p.setTopic(sc.nextLine());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+        try{
+            System.out.print("Enter Publication Date: ");
+            p.setP_date(formatter.parse(sc.nextLine()));
+            
+        } catch (Exception e) {
+            System.out.println("Error reading date");
+        }
+        String insertQuery = "INSERT INTO Publication (title,type,topic,p_date) Values('";
+        insertQuery += p.getTitle() + "','" + p.getType() + "','" + p.getTopic() + "','";
+        insertQuery += p.getP_date()  + "')"  ;
+
+        System.out.println("Query: "+insertQuery);
+
+    }
+    static void updatePublication(Scanner sc, Statement stmt) {
+
+//         // p_id, title, type, topic, p_date
+
+        System.out.print("Enter Publication ID: ");
+        int p_id = Integer.parseInt(sc.nextLine());
+        System.out.println("Choose the variable to be updated");
+        System.out.println("1. title");
+        System.out.println("2. type");
+        System.out.println("3. Topic");
+        System.out.println("4. Publication Date");
+        System.out.print("Enter New Value: ");
+        String value = sc.nextLine() ;
+        int option = Integer.parseInt(sc.nextLine());
+
+        String updateQuery = "Update Publication set ";
+
+        switch(option) {
+                    case 1:
+                        updateQuery += "title = '" + value + "'";
+                        break;
+                    case 2:
+                        updateQuery += "type = '" + value + "'";
+                        break;
+                    case 3:
+                        updateQuery += "topic = '" + value + "'";
+                        break;
+                    case 4:
+                        updateQuery += "p_date = '" + value + "'";
+                        break;
+                    
+                    default:
+                        System.out.println("Invalid option");
+                }
+        
+        updateQuery += " where p_id = " + p_id;
+
+        System.out.println("Query: "+updateQuery); 
+
+    }
+    static void assignEditorPublication(Scanner sc, Statement stmt) {
+//             // INSERT INTO Writes_or_edits_chapters 
+//             // SELECT 1 w_id,chapter_no, p_id 
+//             // FROM Chapters  
+//             // WHERE p_id = 6;
+//             // --ANS
+//             // Select * from Writes_or_edits_chapters;
+
+    }
+    static void viewPublication(Scanner sc, Statement stmt)  
+          
+    {
+//         Publication p = new Publication() ;
+//         Book b = new Book() ;
+//         Chapter c = new Chapter() ;
+//         Articles a = new Articles() ;
+//         Magazine_Journal  mj = new Magazine_Journal() ;
+
+//                 // SELECT P.*,B.edition,B.ISBN,C.chapter_no,C.chapter_title,C.chapter_date
+//                 // FROM Publication P 
+//                 // JOIN Book B 
+//                 // ON P.p_id = B.p_id
+//                 // JOIN Chapters C  
+//                 // ON C.p_id = B.p_id 
+//                 // where P.p_id IN
+//                 // ( SELECT DISTINCT p_id FROM Writes_or_edits_chapters WHERE w_id = 1 ); 
+//                 Publication p = new Publication();
+//                 System.out.println("1 for View Publication for a book ");
+//                 System.out.println("2 for View Publication for a Magazine ");
+//                 int option = Integer.parseInt(sc.nextLine());
+//                 System.out.println("Enter the piblication id  ");
+//                 int p_id = Integer.parseInt(sc.nextLine());
+//                 String viewQuery = ""; 
+//                 switch(option) {
+//                     case 1:
+//                     viewQuery = " SELECT  "  + p.getP_id() + "','"+ p.getTitle() + "','" + p.getType() + "','" + p.getTopic() + "','";
+//                     viewQuery+= p.getP_date()  + b.getIsbn() + "','" + b.getEdition() + "','" + c.getNumber() + "','";
+//                     viewQuery+= c.getTitle() + "','" + c.getdate() ; 
+//                     viewQuery+= "FROM Publication P JOIN Book B ON"  ;
+//                     viewQuery+= p.getP_id() ;
+//                     viewQuery+= "'='" ;
+//                     viewQuery+= b.getP_id() ;
+//                     viewQuery+= "where" + p.getP_id() + "IN" ;
+//                     viewQuery+= "(" + "SELECT DISTINCT " + p.getP_id() + "FROM Writes_or_edits_chapters WHERE w_id = 1 " + ")"  ;
+//                     System.out.println("Query: "+ viewQuery); 
+//                      break;
+                   
+//                      case 2:
+//                      viewQuery+= p.getP_date()  ;
+//                      viewQuery+= a.getArticle_no() + "','" + a.getArticle_title() + "','" + a.getText() + "','";
+//                      viewQuery+= a.getArticle_date()    ; 
+//                      viewQuery+= "FROM Publication P JOIN Magazine_Journal M ON"  ;
+//                      viewQuery+= p.getP_id() ;
+//                      viewQuery+= "'='" ;
+//                      viewQuery+= mj.getP_id() ;
+//                      viewQuery+= "where" + p.getP_id() + "IN" ;
+//                      viewQuery+= "(" + "SELECT DISTINCT " + p.getP_id() + "FROM Writes_or_edits_articles WHERE w_id = 1 " + ")"  ;
+//                      System.out.println("Query: "+ viewQuery); 
+//                       break;
+//                     default:
+//                         System.out.println("Invalid option");
+//                 }
+
+
+
+    }
+static void addArticle(Scanner sc, Statement stmt) {
+
+//             Article a = new Article() ;
+//            // Publication p = new Publication();
+            
+//          // INSERT INTO Articles (article_no,p_id,article_title,text,article_date) Values (3,5,'Kaggle','growth questioning but this error got me because',' 2022-11-31' );
+               
+//                 System.out.print("Enter Article number ");
+//                 a.setArticle_no(sc.nextLine());
+                
+//                 System.out.print("Enter publication id  ");
+//                 a.setP_id(sc.nextLine());
+//                 System.out.print("Enter Title for the Article: ");
+//                 a.setArticle_title(sc.nextLine());
+//                 System.out.print("Enter Article text: ");
+//                 a.setText(sc.nextLine());
+
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+//         try{
+//             System.out.print("Enter Article Date: ");
+//             a.setArticle_date(formatter.parse(sc.nextLine()));
+//             // o.setDue_date(formatter.parse(sc.nextLine()));
+            
+//         } catch (Exception e) {
+//             System.out.println("Error reading date");
+//         }
+
+//         String insertQuery = "INSERT INTO Articles (article_no,p_id,article_title,text,article_date) Values('";
+//         insertQuery += a.getArticle_no() + "','" + a.getP_id() +"','" + a.getArticle_title() + "','" + a.getText() + "','";
+//         insertQuery += a.getArticle_date()  + "')"  ;
+
+//         System.out.println("Query: "+insertQuery);
+    
+
+//     }
+//     static void deleteArticle(Scanner sc, Statement stmt) {
+//        // DELETE FROM Articles where p_id = 2 AND article_no = 2;
+
+//        Articles a = new Articles() ;
+    
+      
+//        System.out.print("Enter publication id  ");
+//        a.setP_id(Integer.parseInt(sc.nextLine()));
+ 
+//               System.out.print("Enter Article number ");
+//               a.setArticle_no(Integer.parseInt(sc.nextLine()));
+
+//               String selectQuery = "Select count(*) as Number from Articles where p_id= ";
+//               selectQuery += a.getP_id();
+//               selectQuery += ";";
+
+//         System.out.println(selectQuery);
+ 
+ 
+//               String deleteQuery = "DELETE FROM Articles where p_id =";
+//               deleteQuery += a.getP_id() ;
+//               deleteQuery += "AND"  ;
+//               deleteQuery += a.getArticle_no() ;
+//               deleteQuery += ";";
+         
+//               System.out.println("Query: "+deleteQuery);
+
+    }
+    static void addChapter(Scanner sc, Statement stmt) {
+
+
+// //         INSERT INTO Chapters (chapter_no,p_id,chapter_title,chapter_date) Values
+// // (3,1,'Earth','1998-08-21');
+
+//             Chapter c = new Chapter();
+//             System.out.println("Enter Chapter number: ");
+//             c.setNumber(Integer.parseInt(sc.nextLine()));
+//             System.out.println("Enter Publication ID for the Chapter: ");
+//             c.setP_id(Integer.parseInt(sc.nextLine()));
+//             System.out.println("Enter Chapter Title: ");
+//             c.setTitle(sc.nextLine());
+
+//             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+//          try{
+//             System.out.print("Enter Chapter  Date: ");
+//             c.setDate(formatter.parse(sc.nextLine()));
+//             // o.setDue_date(formatter.parse(sc.nextLine()));
+            
+//          } catch (Exception e) {
+//             System.out.println("Error reading date");
+//          }
+//            // System.out.println("Checking if there are more than One Chapter");
+
+
+//             String sinsertQuery= "INSERT INTO Chapters (chapter_no,p_id,chapter_title,chapter_date) Values('";
+//             insertQuery += c.getNumber() + "','" + c.getP_id() +"','" + c.getTitle() + "','" + c.getdate() + "','";
+//             insertQuery +=  "')"  ;
+    
+//             System.out.println("Query: "+insertQuery);
+
+
+
+    }
+    static void deleteChapter(Scanner sc, Statement stmt) {
+//         Chapter c = new Chapter();
+//         System.out.println("Enter Publication ID for the Chapter: ");
+//         c.setP_id(Integer.parseInt(sc.nextLine()));
+//         System.out.println("Enter Chapter to be Deleted Name: ");
+//         c.setNumber(Integer.parseInt(sc.nextLine()));
+
+//         System.out.println("Checking if there are more than One Chapter");
+        
+        
+//         String selectQuery = "Select count(*) as Number from Chapters where p_id= ";
+//         selectQuery += c.getP_id();
+//         selectQuery += ";";
+
+//         System.out.println(selectQuery);
+
+//         String deleteQuery = "DELETE FROM Chapters where p_id = ";
+//         deleteQuery += c.getP_id();
+//         deleteQuery += " and chapter_no = ";
+//         deleteQuery += c.getNumber();
+//         deleteQuery += ";";
+
+//         System.out.println(deleteQuery);
+
+//         // try {
+//         //     ResultSet rs = stmt.executeQuery(selectQuery);
+//         //     while(rs.next()){
+//         //         Int count = rs.getInt('Number')
+//         //     }
+//         //     if count > 1 {
+//         //         stmt.executeUpdate(deleteQuery);
+//         //         System.out.println("Chapter Record Deleted");
+//         //     }
+//         //     else {
+//         //         System.out.println("Chapter Record Cannot be Delete as there is only one chapter for the given Publication ID");
+//         //     }
+
+//         // } catch(SQLException e) {
+//         //     e.printSetackTrace();
+//         // }   
+    // }
+    }
+
+    //     Chapter c = new Chapter();
+    //     System.out.println("Enter Publication ID for the Chapter: ");
+    //     c.setP_id(Integer.parseInt(sc.nextLine()));
+    //     System.out.println("Enter Chapter to be Deleted Name: ");
+    //     c.setNumber(Integer.parseInt(sc.nextLine()));
+
+    //     System.out.println("Checking if there are more than One Chapter");
+        
+        
+    //     String selectQuery = "Select count(*) as Number from Chapters where p_id= ";
+    //     selectQuery += c.getP_id();
+    //     selectQuery += ";";
+
+    //     System.out.println(selectQuery);
+
+    //     String deleteQuery = "DELETE FROM Chapters where p_id = ";
+    //     deleteQuery += c.getP_id();
+    //     deleteQuery += " and chapter_no = ";
+    //     deleteQuery += c.getNumber();
+    //     deleteQuery += ";";
+
+    //     System.out.println(deleteQuery);
+
+
+    // }
+
+    static void deleteArticle(Scanner sc, Statement stmt) {
+
+    }
+    static void close(Connection conn) {
+        if(conn != null) {
+            try { conn.close(); } catch(Throwable whatever) {}
+        }
+    }
+
+    static void close(Statement st) {
+        if(st != null) {
+            try { st.close(); } catch(Throwable whatever) {}
+        }
+    }
+
+    static void close(ResultSet rs) {
+        if(rs != null) {
+            try { rs.close(); } catch(Throwable whatever) {}
+        }
+    }
+}
+
