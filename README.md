@@ -5,6 +5,7 @@ javac -cp ./mariadb-java-client-3.0.4.jar *.java
 
 Execution:
 java -cp ./mariadb-java-client-3.0.4.jar: login
+
 Navigate through menu for the various operations
 
 #  DOCUMENTATION 
